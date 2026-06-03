@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistral – Meta TSS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red:    #ff0044;
+            --purple: #8800ff;
+            --rg: rgba(255,0,68,.6);
+            --pg: rgba(136,0,255,.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: #07000e;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        #cvs { position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none; }
+
+        .blob { position:fixed;border-radius:50%;filter:blur(110px);opacity:.2;pointer-events:none;z-index:0; }
+        .b1 { width:600px;height:600px;background:var(--purple);top:-160px;left:-160px;animation:drift 14s ease-in-out infinite; }
+        .b2 { width:480px;height:480px;background:var(--red);bottom:-100px;right:-100px;animation:drift 14s ease-in-out infinite reverse; }
+        @keyframes drift {
+            0%,100%{transform:translate(0,0);}
+            40%{transform:translate(40px,-30px);}
+            70%{transform:translate(-20px,22px);}
+        }
+
+        /* NAV */
+        nav {
+            position:fixed;top:0;left:0;right:0;z-index:200;
+            display:flex;align-items:center;justify-content:space-between;
+            padding:0 56px;height:66px;
+            background:rgba(7,0,14,.55);
+            backdrop-filter:blur(22px);
+            border-bottom:1px solid rgba(255,0,68,.13);
+        }
+        .nav-logo { display:flex;align-items:center;gap:11px;text-decoration:none; }
+        .nav-logo img { height:34px;filter:drop-shadow(0 0 9px var(--red)); }
+        .nav-logo span {
+            font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;
+            letter-spacing:4px;text-transform:uppercase;
+            background:linear-gradient(90deg,var(--red),var(--purple));
+            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .nav-links { display:flex;gap:4px;list-style:none; }
+        .nav-links a {
+            color:rgba(255,255,255,.65);text-decoration:none;
+            font-size:12px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+            padding:7px 15px;border-radius:6px;transition:color .2s,background .2s;
+        }
+        .nav-links a:hover { color:#fff;background:rgba(255,0,68,.13); }
+        .nav-links a.active { color:#fff;background:rgba(255,0,68,.18); }
+        .nav-links .join { color:#fff;background:linear-gradient(135deg,var(--red),var(--purple));box-shadow:0 0 16px rgba(255,0,68,.4); }
+        .nav-links .join:hover { box-shadow:0 0 28px rgba(255,0,68,.6); }
+
+        /* PAGE HEADER */
+        .page-hero {
+            position:relative;z-index:1;
+            padding:130px 40px 50px;
+            text-align:center;
+        }
+        .page-hero .tag { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:12px;display:block; }
+        .page-hero h1 {
+            font-family:'Rajdhani',sans-serif;
+            font-size:clamp(38px,6vw,68px);font-weight:700;
+            text-transform:uppercase;line-height:1;
+            background:linear-gradient(155deg,#fff 20%,#dd99ff 60%,var(--red) 100%);
+            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+            margin-bottom:10px;
+        }
+        .page-hero p { font-size:14px;opacity:.45;letter-spacing:1px; }
+
+        .sep { position:relative;z-index:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,68,.35),rgba(136,0,255,.35),transparent);margin-bottom:60px; }
+
+        /* CONTAINER */
+        .container { position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 40px 100px; }
+
+        /* LÉGENDE */
+        .legend {
+            background:rgba(255,255,255,.03);
+            border:1px solid rgba(255,255,255,.08);
+            border-radius:14px;padding:24px 32px;
+            backdrop-filter:blur(18px);
+            display:flex;align-items:center;justify-content:center;gap:40px;
+            flex-wrap:wrap;margin-bottom:50px;
+            position:relative;overflow:hidden;
+        }
+        .legend::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--purple)); }
+        .legend-title { font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-right:8px; }
+        .legend-item { display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600; }
+        .dot-legend { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
+        .dot-green { background:#00ff88;box-shadow:0 0 8px #00ff88; }
+        .dot-orange { background:#ff8800;box-shadow:0 0 8px #ff8800; }
+
+        /* TABS */
+        .tabs {
+            display:flex;gap:6px;flex-wrap:wrap;margin-bottom:36px;
+        }
+        .tab-btn {
+            font-family:'Exo 2',sans-serif;font-size:12px;font-weight:600;
+            letter-spacing:1.5px;text-transform:uppercase;
+            padding:8px 20px;border-radius:8px;border:1px solid rgba(255,255,255,.12);
+            background:transparent;color:rgba(255,255,255,.5);cursor:pointer;
+            transition:all .2s;
+        }
+        .tab-btn:hover { color:#fff;border-color:rgba(255,0,68,.4);background:rgba(255,0,68,.08); }
+        .tab-btn.on { color:#fff;border-color:var(--red);background:rgba(255,0,68,.15); }
+
+        /* META SECTION */
+        .meta-group { display:none; }
+        .meta-group.visible { display:block; }
+
+        .meta-section {
+            background:rgba(15,0,25,.55);
+            border:1px solid rgba(255,0,68,.22);
+            border-radius:16px;
+            overflow:hidden;
+            margin-bottom:24px;
+            backdrop-filter:blur(18px);
+            transition:border-color .25s,box-shadow .25s;
+            position:relative;
+        }
+        .meta-section::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--purple));opacity:0;transition:opacity .25s; }
+        .meta-section:hover { border-color:rgba(255,0,68,.45);box-shadow:0 8px 40px rgba(136,0,255,.2); }
+        .meta-section:hover::before { opacity:1; }
+
+        .meta-header {
+            padding:20px 28px;
+            display:flex;align-items:center;gap:16px;
+            border-bottom:1px solid rgba(255,255,255,.06);
+        }
+        .meta-icon {
+            width:40px;height:40px;border-radius:9px;font-size:18px;
+            display:flex;align-items:center;justify-content:center;flex-shrink:0;
+            background:linear-gradient(135deg,rgba(255,0,68,.18),rgba(136,0,255,.18));
+            border:1px solid rgba(255,0,68,.2);
+        }
+        .meta-header-text h2 {
+            font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;
+            text-transform:uppercase;letter-spacing:.5px;line-height:1;
+        }
+        .meta-header-text span {
+            font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.4;margin-top:3px;display:block;
+        }
+
+        .meta-img-wrap {
+            padding:20px 28px 24px;
+        }
+        .meta-img-wrap img {
+            width:100%;border-radius:10px;display:block;
+            border:1px solid rgba(255,255,255,.06);
+        }
+        .meta-img-wrap .no-img {
+            width:100%;height:180px;border-radius:10px;
+            background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);
+            display:flex;align-items:center;justify-content:center;
+            font-size:13px;opacity:.3;letter-spacing:2px;text-transform:uppercase;
+        }
+
+        /* FOOTER */
+        footer {
+            position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.06);
+            padding:34px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+        }
+        .foot-l { display:flex;align-items:center;gap:9px;opacity:.32;font-size:12px;letter-spacing:2px;text-transform:uppercase; }
+        .foot-l img { height:20px;filter:drop-shadow(0 0 5px var(--red)); }
+        .foot-c { font-size:11px;opacity:.2;letter-spacing:1px; }
+
+        @media(max-width:820px){
+            nav{padding:0 18px;} .nav-links{display:none;}
+            .page-hero{padding:110px 20px 36px;}
+            .container{padding:0 16px 80px;}
+            footer{padding:26px 20px;justify-content:center;text-align:center;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<canvas id="cvs"></canvas>
+
+<nav>
+    <a href="index.html" class="nav-logo">
+        <img src="images/logo-mistralv2.png" alt="Mistral">
+        <span>Mistral</span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="annonces.html">Annonces</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="tss.html" class="active">Meta TSS</a></li>
+        <li><a href="sqb.html">SQB</a></li>
+        <li><a href="recrutement.html" class="join">Rejoindre</a></li>
+    </ul>
+</nav>
+
+<div class="page-hero">
+    <span class="tag">// Top Squad Squadrons</span>
+    <h1>Meta TSS</h1>
+    <p>Builds et compositions recommandés par l'escadron Mistral</p>
+</div>
+
+<div class="sep"></div>
+
+<div class="container">
+
+    <!-- LÉGENDE -->
+    <div class="legend">
+        <span class="legend-title">Légende</span>
+        <div class="legend-item">
+            <span class="dot-legend dot-green"></span>
+            <span>Méta — optimal, fortement recommandé</span>
+        </div>
+        <div class="legend-item">
+            <span class="dot-legend dot-orange"></span>
+            <span>Acceptable — viable en situation ou selon le pays</span>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn on" data-tab="avion">✈️ Avion</button>
+        <button class="tab-btn" data-tab="tank">🛡️ Tank</button>
+        <button class="tab-btn" data-tab="mixed">⚔️ Mixed</button>
+    </div>
+
+    <!-- AVION -->
+    <div class="meta-group visible" id="tab-avion">
+        <div class="meta-section">
+            <div class="meta-header">
+                <div class="meta-icon">🏅</div>
+                <div class="meta-header-text">
+                    <h2>META Avion – Challenger League</h2>
+                    <span>Compositions conseillées · Niveau Challenger</span>
+                </div>
+            </div>
+            <div class="meta-img-wrap">
+                <img src="images/meta-chalavion.png" alt="META Avion Challenger" onerror="this.parentElement.innerHTML='<div class=\'no-img\'>Image à venir</div>'">
+            </div>
+        </div>
+
+        <div class="meta-section">
+            <div class="meta-header">
+                <div class="meta-icon">🏆</div>
+                <div class="meta-header-text">
+                    <h2>META Avion – Pro League</h2>
+                    <span>Compositions conseillées · Niveau Pro</span>
+                </div>
+            </div>
+            <div class="meta-img-wrap">
+                <img src="images/meta-proavion.png" alt="META Avion Pro" onerror="this.parentElement.innerHTML='<div class=\'no-img\'>Image à venir</div>'">
+            </div>
+        </div>
+    </div>
+
+    <!-- TANK -->
+    <div class="meta-group" id="tab-tank">
+        <div class="meta-section">
+            <div class="meta-header">
+                <div class="meta-icon">🏅</div>
+                <div class="meta-header-text">
+                    <h2>META Tank – Challenger League</h2>
+                    <span>Compositions conseillées · Niveau Challenger</span>
+                </div>
+            </div>
+            <div class="meta-img-wrap">
+                <img src="images/meta-chaltank.png" alt="META Tank Challenger" onerror="this.parentElement.innerHTML='<div class=\'no-img\'>Image à venir</div>'">
+            </div>
+        </div>
+
+        <div class="meta-section">
+            <div class="meta-header">
+                <div class="meta-icon">🏆</div>
+                <div class="meta-header-text">
+                    <h2>META Tank – Pro League</h2>
+                    <span>Compositions conseillées · Niveau Pro</span>
+                </div>
+            </div>
+            <div class="meta-img-wrap">
+                <img src="images/meta-protank.png" alt="META Tank Pro" onerror="this.parentElement.innerHTML='<div class=\'no-img\'>Image à venir</div>'">
+            </div>
+        </div>
+    </div>
+
+    <!-- MIXED -->
+    <div class="meta-group" id="tab-mixed">
+        <div class="meta-section">
+            <div class="meta-header">
+                <div class="meta-icon">🏅</div>
+                <div class="meta-header-text">
+                    <h2>META Mixed – Challenger League</h2>
+                    <span>Compositions conseillées · Niveau Challenger</span>
+                </div>
+            </div>
+            <div class="meta-img-wrap">
+                <img src="images/meta-chalmixed.png" alt="META Mixed Challenger" onerror="this.parentElement.innerHTML='<div class=\'no-img\'>Image à venir</div>'">
+            </div>
+        </div>
+
+        <div class="meta-section">
+            <div class="meta-header">
+                <div class="meta-icon">🏆</div>
+                <div class="meta-header-text">
+                    <h2>META Mixed – Pro League</h2>
+                    <span>Compositions conseillées · Niveau Pro</span>
+                </div>
+            </div>
+            <div class="meta-img-wrap">
+                <img src="images/meta-promixed.png" alt="META Mixed Pro" onerror="this.parentElement.innerHTML='<div class=\'no-img\'>Image à venir</div>'">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <div class="foot-l">
+        <img src="images/logo-mistralv2.png" alt="">
+        Mistral
+    </div>
+    <div class="foot-c">© 2025 Mistral — Tous droits réservés</div>
+</footer>
+
+<script>
+    /* Particles */
+    const cvs = document.getElementById('cvs');
+    const ctx = cvs.getContext('2d');
+    function resize(){ cvs.width=innerWidth; cvs.height=innerHeight; }
+    addEventListener('resize', resize); resize();
+    const pts = Array.from({length:100},()=>({
+        x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+        r:Math.random()*1.2+.3, vx:(Math.random()-.5)*.2, vy:(Math.random()-.5)*.2,
+        a:Math.random()*.35+.06, c:Math.random()>.5?'#ff0044':'#8800ff'
+    }));
+    function draw(){
+        ctx.clearRect(0,0,cvs.width,cvs.height);
+        pts.forEach(p=>{
+            p.x+=p.vx; p.y+=p.vy;
+            if(p.x<0||p.x>cvs.width||p.y<0||p.y>cvs.height){p.x=Math.random()*cvs.width;p.y=Math.random()*cvs.height;}
+            ctx.save(); ctx.globalAlpha=p.a; ctx.fillStyle=p.c; ctx.shadowColor=p.c; ctx.shadowBlur=6;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+
+    addEventListener('mousemove', e=>{
+        const rx=e.clientX/innerWidth-.5, ry=e.clientY/innerHeight-.5;
+        document.querySelectorAll('.blob').forEach((b,i)=>{
+            b.style.transform=`translate(${rx*16*(i+1)}px,${ry*10*(i+1)}px)`;
+        });
+    });
+
+    /* Scroll reveal */
+    const obs = new IntersectionObserver(es=>es.forEach(e=>{
+        if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}
+    }),{threshold:.06});
+    document.querySelectorAll('.meta-section, .legend').forEach(el=>{
+        el.style.opacity='0'; el.style.transform='translateY(18px)';
+        el.style.transition='opacity .5s ease,transform .5s ease';
+        obs.observe(el);
+    });
+
+    /* Tabs */
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+            document.querySelectorAll('.meta-group').forEach(g=>g.classList.remove('visible'));
+            btn.classList.add('on');
+            document.getElementById('tab-'+btn.dataset.tab).classList.add('visible');
+        });
+    });
+</script>
+</body>
+</html>

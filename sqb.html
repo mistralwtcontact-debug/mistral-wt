@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistral – SQB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red:    #ff0044;
+            --purple: #8800ff;
+            --rg: rgba(255,0,68,.6);
+            --pg: rgba(136,0,255,.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: #07000e;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        #cvs { position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none; }
+
+        .blob { position:fixed;border-radius:50%;filter:blur(110px);opacity:.2;pointer-events:none;z-index:0; }
+        .b1 { width:600px;height:600px;background:var(--purple);top:-160px;left:-160px;animation:drift 14s ease-in-out infinite; }
+        .b2 { width:480px;height:480px;background:var(--red);bottom:-100px;right:-100px;animation:drift 14s ease-in-out infinite reverse; }
+        @keyframes drift {
+            0%,100%{transform:translate(0,0);}
+            40%{transform:translate(40px,-30px);}
+            70%{transform:translate(-20px,22px);}
+        }
+
+        /* NAV */
+        nav {
+            position:fixed;top:0;left:0;right:0;z-index:200;
+            display:flex;align-items:center;justify-content:space-between;
+            padding:0 56px;height:66px;
+            background:rgba(7,0,14,.55);
+            backdrop-filter:blur(22px);
+            border-bottom:1px solid rgba(255,0,68,.13);
+        }
+        .nav-logo { display:flex;align-items:center;gap:11px;text-decoration:none; }
+        .nav-logo img { height:34px;filter:drop-shadow(0 0 9px var(--red)); }
+        .nav-logo span {
+            font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;
+            letter-spacing:4px;text-transform:uppercase;
+            background:linear-gradient(90deg,var(--red),var(--purple));
+            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .nav-links { display:flex;gap:4px;list-style:none; }
+        .nav-links a {
+            color:rgba(255,255,255,.65);text-decoration:none;
+            font-size:12px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+            padding:7px 15px;border-radius:6px;transition:color .2s,background .2s;
+        }
+        .nav-links a:hover { color:#fff;background:rgba(255,0,68,.13); }
+        .nav-links a.active { color:#fff;background:rgba(255,0,68,.18); }
+        .nav-links .join { color:#fff;background:linear-gradient(135deg,var(--red),var(--purple));box-shadow:0 0 16px rgba(255,0,68,.4); }
+        .nav-links .join:hover { box-shadow:0 0 28px rgba(255,0,68,.6); }
+
+        /* PAGE HEADER */
+        .page-hero {
+            position:relative;z-index:1;
+            padding:130px 40px 50px;
+            text-align:center;
+        }
+        .page-hero .tag { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:12px;display:block; }
+        .page-hero h1 {
+            font-family:'Rajdhani',sans-serif;
+            font-size:clamp(38px,6vw,68px);font-weight:700;
+            text-transform:uppercase;line-height:1;
+            background:linear-gradient(155deg,#fff 20%,#dd99ff 60%,var(--red) 100%);
+            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+            margin-bottom:10px;
+        }
+        .page-hero p { font-size:14px;opacity:.45;letter-spacing:1px; }
+
+        .sep { position:relative;z-index:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,68,.35),rgba(136,0,255,.35),transparent);margin-bottom:60px; }
+
+        /* CONTAINER */
+        .container { position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 40px 100px; }
+
+        /* GLASS CARD */
+        .glass {
+            background:rgba(15,0,25,.55);
+            border:1px solid rgba(255,0,68,.22);
+            border-radius:16px;
+            padding:36px 40px;
+            margin-bottom:24px;
+            backdrop-filter:blur(18px);
+            position:relative;overflow:hidden;
+            transition:border-color .25s,box-shadow .25s;
+        }
+        .glass::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--purple));opacity:0;transition:opacity .25s; }
+        .glass:hover { border-color:rgba(255,0,68,.4);box-shadow:0 8px 40px rgba(136,0,255,.18); }
+        .glass:hover::before { opacity:1; }
+
+        .glass-title {
+            display:flex;align-items:center;gap:14px;margin-bottom:24px;
+        }
+        .glass-icon {
+            width:44px;height:44px;border-radius:10px;font-size:20px;flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;
+            background:linear-gradient(135deg,rgba(255,0,68,.18),rgba(136,0,255,.18));
+            border:1px solid rgba(255,0,68,.2);
+        }
+        .glass-title h2 {
+            font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;
+            text-transform:uppercase;letter-spacing:.5px;
+        }
+
+        /* TEXTE */
+        .body-text {
+            font-size:15px;line-height:1.85;opacity:.72;
+        }
+        .body-text p { margin-bottom:16px; }
+        .body-text p:last-child { margin-bottom:0; }
+
+        /* HIGHLIGHTS */
+        .highlights {
+            display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:28px;
+        }
+        .hl {
+            background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+            border-radius:12px;padding:18px 20px;
+        }
+        .hl-val { font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;line-height:1; background:linear-gradient(135deg,var(--red),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; }
+        .hl-lbl { font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.4;margin-top:4px; }
+
+        /* LIGUES */
+        .leagues {
+            display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;
+        }
+        .league-badge {
+            display:flex;align-items:center;gap:8px;
+            padding:8px 16px;border-radius:100px;
+            font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+            border:1px solid;
+        }
+        .lb-bronze  { border-color:rgba(205,127,50,.5);color:#cd7f32;background:rgba(205,127,50,.08); }
+        .lb-silver  { border-color:rgba(192,192,192,.5);color:#c0c0c0;background:rgba(192,192,192,.08); }
+        .lb-gold    { border-color:rgba(255,215,0,.5);color:#ffd700;background:rgba(255,215,0,.08); }
+        .lb-plat    { border-color:rgba(100,200,255,.5);color:#64c8ff;background:rgba(100,200,255,.08); }
+        .lb-diamond { border-color:rgba(180,100,255,.5);color:#b464ff;background:rgba(180,100,255,.1); }
+        .lb-champ   { border-color:rgba(255,50,50,.5);color:#ff4444;background:rgba(255,50,50,.08); }
+        .lb-pro     { border-color:rgba(255,0,68,.7);color:#fff;background:linear-gradient(135deg,rgba(255,0,68,.2),rgba(136,0,255,.2)); }
+
+        /* BOUTONS */
+        .btn-row { display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:10px; }
+        .btn {
+            font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
+            letter-spacing:2px;text-transform:uppercase;text-decoration:none;
+            padding:13px 30px;border-radius:9px;transition:transform .2s,box-shadow .2s;
+            display:inline-flex;align-items:center;gap:10px;
+        }
+        .btn-red { background:linear-gradient(135deg,var(--red),var(--purple));color:#fff;box-shadow:0 0 22px rgba(255,0,68,.4); }
+        .btn-red:hover { transform:translateY(-3px);box-shadow:0 8px 36px rgba(255,0,68,.6); }
+        .btn-purple { background:linear-gradient(135deg,var(--purple),#cc44ff);color:#fff;box-shadow:0 0 22px rgba(136,0,255,.4); }
+        .btn-purple:hover { transform:translateY(-3px);box-shadow:0 8px 36px rgba(136,0,255,.6); }
+
+        /* FOOTER */
+        footer {
+            position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.06);
+            padding:34px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+        }
+        .foot-l { display:flex;align-items:center;gap:9px;opacity:.32;font-size:12px;letter-spacing:2px;text-transform:uppercase; }
+        .foot-l img { height:20px;filter:drop-shadow(0 0 5px var(--red)); }
+        .foot-c { font-size:11px;opacity:.2;letter-spacing:1px; }
+
+        @media(max-width:820px){
+            nav{padding:0 18px;} .nav-links{display:none;}
+            .page-hero{padding:110px 20px 36px;}
+            .container{padding:0 16px 80px;}
+            .glass{padding:24px 20px;}
+            footer{padding:26px 20px;justify-content:center;text-align:center;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<canvas id="cvs"></canvas>
+
+<nav>
+    <a href="index.html" class="nav-logo">
+        <img src="images/logo-mistralv2.png" alt="Mistral">
+        <span>Mistral</span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="annonces.html">Annonces</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="tss.html">Meta TSS</a></li>
+        <li><a href="sqb.html" class="active">SQB</a></li>
+        <li><a href="recrutement.html" class="join">Rejoindre</a></li>
+    </ul>
+</nav>
+
+<div class="page-hero">
+    <span class="tag">// Squadron Battles</span>
+    <h1>SQB</h1>
+    <p>Le mode compétitif officiel de War Thunder réservé aux escadrons</p>
+</div>
+
+<div class="sep"></div>
+
+<div class="container">
+
+    <!-- QU'EST-CE QUE LA SQB -->
+    <div class="glass">
+        <div class="glass-title">
+            <div class="glass-icon">🎮</div>
+            <h2>Qu'est-ce que la SQB ?</h2>
+        </div>
+
+        <div class="highlights">
+            <div class="hl"><div class="hl-val">8v8</div><div class="hl-lbl">Format de jeu</div></div>
+            <div class="hl"><div class="hl-val">BR 4.0→12.7</div><div class="hl-lbl">Battle Rating rotation</div></div>
+            <div class="hl"><div class="hl-val">1 vie</div><div class="hl-lbl">Par véhicule</div></div>
+            <div class="hl"><div class="hl-val">Classé</div><div class="hl-lbl">Points d'escadron</div></div>
+        </div>
+
+        <div class="body-text" style="margin-top:28px;">
+            <p>La SQB, ou Squadron Battles, est le mode compétitif officiel de War Thunder réservé aux escadrons. Deux équipes de 8 joueurs s'affrontent sur des cartes spécifiques dans un format structuré et classé. Chaque match rapporte ou retire des points d'escadron, permettant de monter dans les ligues et d'affronter des équipes de plus en plus fortes.</p>
+            <p>Une partie de SQB se joue en 8 vs 8, avec un BR fixe changeant toutes les semaines (du 12.7 au 4.0). Les joueurs disposent d'une seule vie par véhicule, ce qui rend chaque décision cruciale. Le mode utilise des objectifs de type Domination ou Conquête, où le contrôle des points est essentiel pour gagner.</p>
+            <p>Le déroulement d'un match suit une logique précise : les tanks capturent les points dès le début, l'avion prend l'information ou tente une frappe rapide, puis l'équipe coordonne ses pushes, ses smokes et ses angles pour contrôler la carte. La gestion de l'espace, la communication et la capacité à éliminer les positions clés déterminent l'issue de la partie.</p>
+        </div>
+    </div>
+
+
+    <!-- MÉTA & STRATÉGIE -->
+    <div class="glass">
+        <div class="glass-title">
+            <div class="glass-icon">⚔️</div>
+            <h2>Méta &amp; Stratégie</h2>
+        </div>
+        <div class="body-text">
+            <p>La META change selon les saisons, mais repose généralement sur des véhicules rapides, résistants et efficaces en duel. Les tanks comme les Leopard 2, Strv 122 ou T‑80 dominent souvent la scène, tandis que les avions CAS ou multirôles comme le Su‑25, l'A‑10, l'Alpha Jet TH ou certains jets modernes sont utilisés pour prendre l'avantage aérien ou éliminer des cibles au sol.</p>
+            <p>La SQB demande une équipe organisée, des rôles définis (scout, heavy, AA, CAS), une communication propre et des entraînements réguliers. Les meilleures équipes analysent leurs replays, optimisent leurs compositions et maîtrisent parfaitement les cartes. C'est un mode exigeant mais extrêmement gratifiant, où la coordination et la stratégie priment sur le simple skill individuel.</p>
+        </div>
+    </div>
+
+    <!-- RESSOURCES -->
+    <div class="glass" style="text-align:center;">
+        <div class="glass-title" style="justify-content:center;">
+            <div class="glass-icon">📊</div>
+            <h2>Ressources de l'escadron</h2>
+        </div>
+        <p class="body-text" style="margin-bottom:28px;">Accède au tableau des metas et aux documents officiels de la Mistral.</p>
+        <div class="btn-row">
+            <a href="https://docs.google.com/spreadsheets/d/1_vaOCNVxHw4M-TPlCGAtmBUYqDp5_cZRZDd2xTD9KAQ/edit?usp=sharing"
+               target="_blank" rel="noopener" class="btn btn-red">
+                📋 Tableau des Metas
+            </a>
+            <a href="files/DOC-SQB-MISTRAL-2026.xlsx" download class="btn btn-purple">
+                ⬇️ Télécharger le document
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <div class="foot-l">
+        <img src="images/logo-mistralv2.png" alt="">
+        Mistral
+    </div>
+    <div class="foot-c">© 2025 Mistral — Tous droits réservés</div>
+</footer>
+
+<script>
+    /* Particles */
+    const cvs = document.getElementById('cvs');
+    const ctx = cvs.getContext('2d');
+    function resize(){ cvs.width=innerWidth; cvs.height=innerHeight; }
+    addEventListener('resize', resize); resize();
+    const pts = Array.from({length:100},()=>({
+        x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+        r:Math.random()*1.2+.3, vx:(Math.random()-.5)*.2, vy:(Math.random()-.5)*.2,
+        a:Math.random()*.35+.06, c:Math.random()>.5?'#ff0044':'#8800ff'
+    }));
+    function draw(){
+        ctx.clearRect(0,0,cvs.width,cvs.height);
+        pts.forEach(p=>{
+            p.x+=p.vx; p.y+=p.vy;
+            if(p.x<0||p.x>cvs.width||p.y<0||p.y>cvs.height){p.x=Math.random()*cvs.width;p.y=Math.random()*cvs.height;}
+            ctx.save(); ctx.globalAlpha=p.a; ctx.fillStyle=p.c; ctx.shadowColor=p.c; ctx.shadowBlur=6;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+
+    addEventListener('mousemove', e=>{
+        const rx=e.clientX/innerWidth-.5, ry=e.clientY/innerHeight-.5;
+        document.querySelectorAll('.blob').forEach((b,i)=>{
+            b.style.transform=`translate(${rx*16*(i+1)}px,${ry*10*(i+1)}px)`;
+        });
+    });
+
+    /* Scroll reveal */
+    const obs = new IntersectionObserver(es=>es.forEach(e=>{
+        if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}
+    }),{threshold:.06});
+    document.querySelectorAll('.glass, .hl').forEach(el=>{
+        el.style.opacity='0'; el.style.transform='translateY(18px)';
+        el.style.transition='opacity .5s ease,transform .5s ease';
+        obs.observe(el);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistral – Annonces</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red:    #ff0044;
+            --purple: #8800ff;
+            --rg: rgba(255,0,68,.6);
+            --pg: rgba(136,0,255,.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: #07000e;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ── CANVAS ── */
+        #cvs { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+        /* ── BLOBS ── */
+        .blob { position: fixed; border-radius: 50%; filter: blur(110px); opacity: .2; pointer-events: none; z-index: 0; }
+        .b1 { width: 600px; height: 600px; background: var(--purple); top: -160px; left: -160px; animation: drift 14s ease-in-out infinite; }
+        .b2 { width: 480px; height: 480px; background: var(--red); bottom: -100px; right: -100px; animation: drift 14s ease-in-out infinite reverse; }
+        @keyframes drift {
+            0%,100% { transform: translate(0,0); }
+            40%     { transform: translate(40px,-30px); }
+            70%     { transform: translate(-20px,22px); }
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 56px; height: 66px;
+            background: rgba(7,0,14,.55);
+            backdrop-filter: blur(22px);
+            border-bottom: 1px solid rgba(255,0,68,.13);
+        }
+        .nav-logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+        .nav-logo img { height: 34px; filter: drop-shadow(0 0 9px var(--red)); }
+        .nav-logo span {
+            font-family: 'Rajdhani', sans-serif; font-size: 21px; font-weight: 700;
+            letter-spacing: 4px; text-transform: uppercase;
+            background: linear-gradient(90deg, var(--red), var(--purple));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-links { display: flex; gap: 4px; list-style: none; }
+        .nav-links a {
+            color: rgba(255,255,255,.65); text-decoration: none;
+            font-size: 12px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase;
+            padding: 7px 15px; border-radius: 6px; transition: color .2s, background .2s;
+        }
+        .nav-links a:hover { color: #fff; background: rgba(255,0,68,.13); }
+        .nav-links a.active { color: #fff; background: rgba(255,0,68,.18); }
+        .nav-links .join {
+            color: #fff;
+            background: linear-gradient(135deg, var(--red), var(--purple));
+            box-shadow: 0 0 16px rgba(255,0,68,.4);
+        }
+        .nav-links .join:hover { box-shadow: 0 0 28px rgba(255,0,68,.6); }
+
+        /* ── PAGE HEADER ── */
+        .page-hero {
+            position: relative; z-index: 1;
+            padding: 130px 40px 60px;
+            text-align: center;
+        }
+        .page-hero .tag {
+            display: inline-block; font-size: 11px; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--red);
+            margin-bottom: 14px;
+        }
+        .page-hero h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(40px, 6vw, 72px); font-weight: 700;
+            text-transform: uppercase; line-height: 1;
+            background: linear-gradient(155deg, #fff 20%, #dd99ff 60%, var(--red) 100%);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        .page-hero p {
+            font-size: 15px; opacity: .5; letter-spacing: 1px;
+        }
+
+        /* ── FILTER BAR ── */
+        .filter-bar {
+            position: relative; z-index: 1;
+            display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
+            padding: 0 40px 50px;
+        }
+        .filter-btn {
+            font-family: 'Exo 2', sans-serif; font-size: 12px; font-weight: 600;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 7px 18px; border-radius: 100px; border: 1px solid rgba(255,255,255,.12);
+            background: transparent; color: rgba(255,255,255,.55); cursor: pointer;
+            transition: all .2s;
+        }
+        .filter-btn:hover,
+        .filter-btn.on { color: #fff; border-color: var(--red); background: rgba(255,0,68,.12); }
+
+        /* ── ANNONCES GRID ── */
+        .annonces-wrap {
+            position: relative; z-index: 1;
+            max-width: 1080px; margin: 0 auto; padding: 0 40px 100px;
+        }
+        .annonces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* ── CARD ── */
+        .acard {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 16px; padding: 28px;
+            backdrop-filter: blur(18px);
+            position: relative; overflow: hidden;
+            transition: transform .25s, border-color .25s, background .25s;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .acard::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--red), var(--purple));
+            opacity: 0; transition: opacity .25s;
+        }
+        .acard:hover { transform: translateY(-4px); border-color: rgba(255,0,68,.3); background: rgba(255,255,255,.05); }
+        .acard:hover::before { opacity: 1; }
+
+        .acard-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+        .badge {
+            display: inline-block; font-size: 10px; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 4px 12px; border-radius: 100px;
+        }
+        .badge-important { background: rgba(255,0,68,.2); color: var(--red); border: 1px solid rgba(255,0,68,.35); }
+        .badge-recrutement { background: rgba(136,0,255,.2); color: #bb66ff; border: 1px solid rgba(136,0,255,.35); }
+        .badge-evenement  { background: rgba(0,180,255,.15); color: #44ccff; border: 1px solid rgba(0,180,255,.3); }
+        .badge-update     { background: rgba(0,255,120,.1); color: #44ffaa; border: 1px solid rgba(0,255,120,.25); }
+
+        .acard-date { font-size: 11px; opacity: .35; letter-spacing: 1px; white-space: nowrap; }
+
+        .acard h4 {
+            font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .5px; line-height: 1.15;
+        }
+        .acard p { font-size: 14px; opacity: .6; line-height: 1.65; flex: 1; }
+
+        .acard-footer {
+            display: flex; align-items: center; gap: 8px;
+            padding-top: 12px; border-top: 1px solid rgba(255,255,255,.06);
+            font-size: 12px; opacity: .35; letter-spacing: .5px;
+        }
+        .acard-footer span { opacity: 1; }
+
+        /* ── CARD FEATURED (grande) ── */
+        .acard.featured {
+            grid-column: 1 / -1;
+            flex-direction: row; align-items: flex-start; gap: 32px;
+            padding: 36px;
+        }
+        .acard.featured .acard-body { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .acard.featured .acard-icon {
+            width: 72px; height: 72px; flex-shrink: 0; border-radius: 14px; font-size: 32px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(255,0,68,.2), rgba(136,0,255,.2));
+            border: 1px solid rgba(255,0,68,.25);
+        }
+        .acard.featured h4 { font-size: 26px; }
+        .acard.featured p  { font-size: 15px; }
+
+        /* ── EMPTY STATE ── */
+        .empty {
+            grid-column: 1 / -1; text-align: center; padding: 60px 20px;
+            opacity: .35; font-size: 15px; letter-spacing: 1px;
+        }
+
+        /* ── SEP ── */
+        .sep { position:relative;z-index:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,68,.35),rgba(136,0,255,.35),transparent); }
+
+        /* ── FOOTER ── */
+        footer {
+            position: relative; z-index: 1;
+            border-top: 1px solid rgba(255,255,255,.06);
+            padding: 34px 56px; display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; gap: 12px;
+        }
+        .foot-l { display:flex;align-items:center;gap:9px;opacity:.32;font-size:12px;letter-spacing:2px;text-transform:uppercase; }
+        .foot-l img { height:20px;filter:drop-shadow(0 0 5px var(--red)); }
+        .foot-c { font-size:11px;opacity:.2;letter-spacing:1px; }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:820px){
+            nav { padding: 0 18px; }
+            .nav-links { display: none; }
+            .page-hero { padding: 110px 20px 40px; }
+            .filter-bar { padding: 0 20px 36px; }
+            .annonces-wrap { padding: 0 20px 80px; }
+            .acard.featured { flex-direction: column; }
+            footer { padding: 26px 20px; justify-content: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<canvas id="cvs"></canvas>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">
+        <img src="images/logo-mistralv2.png" alt="Mistral">
+        <span>Mistral</span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="annonces.html" class="active">Annonces</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="tss.html">Meta TSS</a></li>
+        <li><a href="sqb.html">SQB</a></li>
+        <li><a href="recrutement.html" class="join">Rejoindre</a></li>
+    </ul>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-hero">
+    <p class="tag">// Officiel</p>
+    <h1>Annonces</h1>
+    <p>Toutes les communications officielles de la Mistral</p>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+    <button class="filter-btn on" data-filter="all">Tout</button>
+    <button class="filter-btn" data-filter="important">Important</button>
+    <button class="filter-btn" data-filter="recrutement">Recrutement</button>
+    <button class="filter-btn" data-filter="evenement">Événement</button>
+    <button class="filter-btn" data-filter="update">Update</button>
+</div>
+
+<div class="sep"></div>
+
+<!-- ANNONCES -->
+<div class="annonces-wrap">
+    <div class="annonces-grid" id="grid">
+
+        <!-- Annonce featured -->
+        <div class="acard featured" data-cat="important">
+            <div class="acard-icon">🚀</div>
+            <div class="acard-body">
+                <div class="acard-top">
+                    <span class="badge badge-important">Important</span>
+                    <span class="acard-date">01 Juin 2025</span>
+                </div>
+                <h4>Création officielle de la Mistral</h4>
+                <p>La Mistral est officiellement créée et opérationnelle. Bienvenue à tous nos membres fondateurs qui ont cru en ce projet dès le premier jour. Notre objectif est clair : dominer en TSS et nous imposer en SQB. L'aventure commence maintenant.</p>
+                <div class="acard-footer">
+                    <span>✍️</span> Publié par <span>Direction Mistral</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte normale -->
+        <div class="acard" data-cat="recrutement">
+            <div class="acard-top">
+                <span class="badge badge-recrutement">Recrutement</span>
+                <span class="acard-date">01 Juin 2025</span>
+            </div>
+            <h4>Ouverture des candidatures</h4>
+            <p>Les candidatures sont ouvertes pour tous les pilotes BR 4.0 et plus. Sérieux, motivation et esprit d'équipe sont les seules conditions.</p>
+            <div class="acard-footer">
+                <span>✍️</span> Publié par <span>Direction Mistral</span>
+            </div>
+        </div>
+
+        <div class="acard" data-cat="evenement">
+            <div class="acard-top">
+                <span class="badge badge-evenement">Événement</span>
+                <span class="acard-date">À venir</span>
+            </div>
+            <h4>Premier entraînement TSS</h4>
+            <p>Notre premier entraînement collectif en TSS sera annoncé prochainement. Préparez vos appareils et restez connectés.</p>
+            <div class="acard-footer">
+                <span>✍️</span> Publié par <span>Direction Mistral</span>
+            </div>
+        </div>
+
+        <div class="acard" data-cat="update">
+            <div class="acard-top">
+                <span class="badge badge-update">Update</span>
+                <span class="acard-date">03 Juin 2025</span>
+            </div>
+            <h4>Site web en ligne</h4>
+            <p>Le site officiel de la Mistral est désormais en ligne. Guides, news et résultats SQB seront mis à jour régulièrement.</p>
+            <div class="acard-footer">
+                <span>✍️</span> Publié par <span>Direction Mistral</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="foot-l">
+        <img src="images/logo-mistralv2.png" alt="">
+        Mistral
+    </div>
+    <div class="foot-c">© 2025 Mistral — Tous droits réservés</div>
+</footer>
+
+<script>
+    /* Particles */
+    const cvs = document.getElementById('cvs');
+    const ctx = cvs.getContext('2d');
+    function resize(){ cvs.width = innerWidth; cvs.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+
+    const pts = Array.from({length:100}, () => ({
+        x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+        r: Math.random()*1.2+.3, vx:(Math.random()-.5)*.2, vy:(Math.random()-.5)*.2,
+        a: Math.random()*.38+.07, c: Math.random()>.5?'#ff0044':'#8800ff'
+    }));
+    function draw(){
+        ctx.clearRect(0,0,cvs.width,cvs.height);
+        pts.forEach(p=>{
+            p.x+=p.vx; p.y+=p.vy;
+            if(p.x<0||p.x>cvs.width||p.y<0||p.y>cvs.height){
+                p.x=Math.random()*cvs.width; p.y=Math.random()*cvs.height;
+            }
+            ctx.save(); ctx.globalAlpha=p.a; ctx.fillStyle=p.c;
+            ctx.shadowColor=p.c; ctx.shadowBlur=6;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+
+    /* Parallax blobs */
+    addEventListener('mousemove', e => {
+        const rx=e.clientX/innerWidth-.5, ry=e.clientY/innerHeight-.5;
+        document.querySelectorAll('.blob').forEach((b,i)=>{
+            b.style.transform=`translate(${rx*16*(i+1)}px,${ry*10*(i+1)}px)`;
+        });
+    });
+
+    /* Scroll reveal */
+    const obs = new IntersectionObserver(es=>es.forEach(e=>{
+        if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}
+    }),{threshold:.06});
+    document.querySelectorAll('.acard').forEach(el=>{
+        el.style.opacity='0'; el.style.transform='translateY(20px)';
+        el.style.transition='opacity .5s ease,transform .5s ease';
+        obs.observe(el);
+    });
+
+    /* Filtre */
+    document.querySelectorAll('.filter-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+            document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+            btn.classList.add('on');
+            const f = btn.dataset.filter;
+            document.querySelectorAll('.acard').forEach(card=>{
+                const show = f==='all' || card.dataset.cat===f;
+                card.style.display = show ? '' : 'none';
+            });
+        });
+    });
+</script>
+</body>
+</html>
