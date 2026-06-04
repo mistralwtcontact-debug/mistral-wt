@@ -169,13 +169,50 @@
         .foot-l img { height:20px;filter:drop-shadow(0 0 5px var(--red)); }
         .foot-c { font-size:11px;opacity:.2;letter-spacing:1px; }
 
+        /* ── HAMBURGER ── */
+        .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:6px; z-index:201; background:none; border:none; }
+        .hamburger span { width:24px; height:2px; background:#fff; border-radius:2px; transition:all .3s; display:block; }
+        .hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px); }
+        .hamburger.open span:nth-child(2) { opacity:0; }
+        .hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px); }
+
+        .nav-mobile {
+            display:none; position:fixed;
+            top:66px; left:0; right:0; bottom:0; z-index:199;
+            background:rgba(7,0,14,.97); backdrop-filter:blur(20px);
+            flex-direction:column; align-items:center; justify-content:center; gap:6px;
+        }
+        .nav-mobile.open { display:flex; }
+        .nav-mobile a {
+            color:#fff; text-decoration:none; font-family:'Exo 2',sans-serif;
+            font-size:18px; font-weight:600; letter-spacing:2px; text-transform:uppercase;
+            padding:14px 40px; border-radius:10px; transition:background .2s; width:240px; text-align:center;
+        }
+        .nav-mobile a:hover { background:rgba(255,0,68,.15); }
+        .nav-mobile .join {
+            background:linear-gradient(135deg,#ff0044,#8800ff);
+            box-shadow:0 0 16px rgba(255,0,68,.4); margin-top:10px; color:#fff;
+        }
+
         @media(max-width:820px){
-            nav{padding:0 18px;} .nav-links{display:none;}
-            .page-hero{padding:110px 20px 36px;}
-            .container{padding:0 16px 80px;}
-            .glass{padding:24px 20px;}
-            .contact-row{grid-template-columns:1fr;}
-            footer{padding:26px 20px;justify-content:center;text-align:center;}
+            nav { padding:0 18px; }
+            .nav-links { display:none; }
+            .hamburger { display:flex; }
+            .page-hero { padding:110px 20px 36px; }
+            .container, .sec, .cards-sec, .annonces-wrap { padding-left:16px!important; padding-right:16px!important; }
+            .about, .section-about { grid-template-columns:1fr; gap:36px; }
+            .contact-row { grid-template-columns:1fr; }
+            .banner-wrap { margin:0 16px 70px; }
+            .banner { padding:32px 20px; flex-direction:column; text-align:center; }
+            footer { padding:26px 20px; justify-content:center; text-align:center; }
+            .glass { padding:24px 18px; }
+            .highlights { grid-template-columns:1fr 1fr; }
+            .crit-grid { grid-template-columns:1fr; }
+        }
+        @media(max-width:480px){
+            .cards-grid, .grid { grid-template-columns:1fr; }
+            .stat { min-width:50%; padding:18px 12px; }
+            .highlights { grid-template-columns:1fr; }
         }
     </style>
 </head>
@@ -197,7 +234,17 @@
         <li><a href="sqb.html">SQB</a></li>
         <li><a href="recrutement.html" class="join active">Rejoindre</a></li>
     </ul>
+    <button class="hamburger" id="hbg" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
 </nav>
+<div class="nav-mobile" id="nav-mobile">
+    <a href="annonces.html">Annonces</a>
+    <a href="news.html">News</a>
+    <a href="tss.html">Meta TSS</a>
+    <a href="sqb.html">SQB</a>
+    <a href="recrutement.html" class="join active">Rejoindre</a>
+</div>
 
 <div class="page-hero">
     <span class="tag">// Recrutement ouvert</span>
@@ -337,6 +384,20 @@
         el.style.transition='opacity .5s ease,transform .5s ease';
         obs.observe(el);
     });
+
+    /* Hamburger */
+    const hbg = document.getElementById('hbg');
+    const navMobile = document.getElementById('nav-mobile');
+    hbg.addEventListener('click', () => {
+        hbg.classList.toggle('open');
+        navMobile.classList.toggle('open');
+        document.body.style.overflow = navMobile.classList.contains('open') ? 'hidden' : '';
+    });
+    navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        hbg.classList.remove('open');
+        navMobile.classList.remove('open');
+        document.body.style.overflow = '';
+    }));
 </script>
 </body>
 </html>
