@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistral – Politique de confidentialité</title>
+    <meta name="robots" content="noindex, follow">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --red:#ff0044; --purple:#8800ff; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Exo 2',sans-serif; background:#07000e; color:#fff; overflow-x:hidden; min-height:100vh; }
+
+        #cvs { position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none; }
+        .blob { position:fixed;border-radius:50%;filter:blur(110px);opacity:.18;pointer-events:none;z-index:0; }
+        .b1 { width:600px;height:600px;background:var(--purple);top:-160px;left:-160px;animation:drift 14s ease-in-out infinite; }
+        .b2 { width:480px;height:480px;background:var(--red);bottom:-100px;right:-100px;animation:drift 14s ease-in-out infinite reverse; }
+        @keyframes drift { 0%,100%{transform:translate(0,0);} 40%{transform:translate(40px,-30px);} 70%{transform:translate(-20px,22px);} }
+
+        nav {
+            position:fixed;top:0;left:0;right:0;z-index:200;
+            display:flex;align-items:center;justify-content:space-between;
+            padding:0 56px;height:66px;
+            background:rgba(7,0,14,.55);backdrop-filter:blur(22px);
+            border-bottom:1px solid rgba(255,0,68,.13);
+        }
+        .nav-logo { display:flex;align-items:center;gap:11px;text-decoration:none; }
+        .nav-logo img { height:34px;filter:drop-shadow(0 0 9px var(--red)); }
+        .nav-logo span {
+            font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;
+            letter-spacing:4px;text-transform:uppercase;
+            background:linear-gradient(90deg,var(--red),var(--purple));
+            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .nav-links { display:flex;gap:4px;list-style:none; }
+        .nav-links a {
+            color:rgba(255,255,255,.65);text-decoration:none;
+            font-size:12px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+            padding:7px 15px;border-radius:6px;transition:color .2s,background .2s;
+        }
+        .nav-links a:hover { color:#fff;background:rgba(255,0,68,.13); }
+        .nav-links .join { color:#fff;background:linear-gradient(135deg,var(--red),var(--purple));box-shadow:0 0 16px rgba(255,0,68,.4); }
+
+        .hamburger { display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;z-index:201;background:none;border:none; }
+        .hamburger span { width:24px;height:2px;background:#fff;border-radius:2px;transition:all .3s;display:block; }
+        .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+        .hamburger.open span:nth-child(2){opacity:0;}
+        .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+        .nav-mobile {
+            display:none;position:fixed;top:66px;left:0;right:0;bottom:0;z-index:199;
+            background:rgba(7,0,14,.97);backdrop-filter:blur(20px);
+            flex-direction:column;align-items:center;justify-content:center;gap:6px;
+        }
+        .nav-mobile.open { display:flex; }
+        .nav-mobile a {
+            color:#fff;text-decoration:none;font-family:'Exo 2',sans-serif;
+            font-size:18px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+            padding:14px 40px;border-radius:10px;transition:background .2s;width:240px;text-align:center;
+        }
+        .nav-mobile a:hover { background:rgba(255,0,68,.15); }
+        .nav-mobile .join { background:linear-gradient(135deg,var(--red),var(--purple));box-shadow:0 0 16px rgba(255,0,68,.4);margin-top:10px; }
+
+        .page-hero { position:relative;z-index:1;padding:130px 40px 50px;text-align:center; }
+        .page-hero .tag { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:12px;display:block; }
+        .page-hero h1 {
+            font-family:'Rajdhani',sans-serif;font-size:clamp(34px,5vw,58px);font-weight:700;
+            text-transform:uppercase;line-height:1;
+            background:linear-gradient(155deg,#fff 20%,#dd99ff 60%,var(--red) 100%);
+            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+            margin-bottom:10px;
+        }
+        .page-hero p { font-size:13px;opacity:.4;letter-spacing:1px; }
+
+        .sep { position:relative;z-index:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,68,.35),rgba(136,0,255,.35),transparent);margin-bottom:60px; }
+
+        .container { position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 40px 100px; }
+
+        .glass {
+            background:rgba(15,0,25,.55);border:1px solid rgba(255,0,68,.18);
+            border-radius:16px;padding:36px 40px;margin-bottom:20px;
+            backdrop-filter:blur(18px);position:relative;overflow:hidden;
+        }
+        .glass::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--purple)); }
+
+        .glass h2 {
+            font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;
+            text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;
+            display:flex;align-items:center;gap:10px;
+        }
+        .glass h2 span { font-size:18px; }
+
+        .glass p { font-size:14px;line-height:1.85;opacity:.65;margin-bottom:12px; }
+        .glass p:last-child { margin-bottom:0; }
+        .glass ul { list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:10px; }
+        .glass ul li { font-size:14px;opacity:.65;line-height:1.6;padding-left:18px;position:relative; }
+        .glass ul li::before { content:'▸';color:var(--red);position:absolute;left:0; }
+
+        .update-date {
+            font-size:11px;opacity:.3;letter-spacing:2px;text-transform:uppercase;
+            text-align:center;margin-bottom:40px;position:relative;z-index:1;
+        }
+
+        .highlight { color:#dd99ff; font-weight:600; }
+        .link-inline { color:var(--red);text-decoration:none;border-bottom:1px solid rgba(255,0,68,.3);transition:border-color .2s; }
+        .link-inline:hover { border-color:var(--red); }
+
+        footer {
+            position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.06);
+            padding:34px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+        }
+        .foot-l { display:flex;align-items:center;gap:9px;opacity:.32;font-size:12px;letter-spacing:2px;text-transform:uppercase; }
+        .foot-l img { height:20px;filter:drop-shadow(0 0 5px var(--red)); }
+        .foot-c { font-size:11px;opacity:.2;letter-spacing:1px; }
+
+        @media(max-width:820px){
+            nav{padding:0 18px;} .nav-links{display:none;} .hamburger{display:flex;}
+            .page-hero{padding:110px 20px 36px;} .container{padding:0 16px 80px;} .glass{padding:24px 18px;}
+            footer{padding:26px 20px;justify-content:center;text-align:center;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<canvas id="cvs"></canvas>
+
+<nav>
+    <a href="index.html" class="nav-logo">
+        <img src="images/logo-mistralv2.png" alt="Mistral">
+        <span>Mistral</span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="annonces.html">Annonces</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="tss.html">Meta TSS</a></li>
+        <li><a href="sqb.html">SQB</a></li>
+        <li><a href="recrutement.html" class="join">Rejoindre</a></li>
+    </ul>
+    <button class="hamburger" id="hbg" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+<div class="nav-mobile" id="nav-mobile">
+    <a href="annonces.html">Annonces</a>
+    <a href="news.html">News</a>
+    <a href="tss.html">Meta TSS</a>
+    <a href="sqb.html">SQB</a>
+    <a href="recrutement.html" class="join">Rejoindre</a>
+</div>
+
+<div class="page-hero">
+    <span class="tag">// Légal</span>
+    <h1>Politique de confidentialité</h1>
+    <p>Dernière mise à jour : 4 juin 2026</p>
+</div>
+
+<div class="sep"></div>
+
+<div class="container">
+
+    <p class="update-date">Document applicable à mistralwtcontact-debug.github.io/mistral-wt</p>
+
+    <div class="glass">
+        <h2><span>📋</span> Présentation</h2>
+        <p>L'escadron <span class="highlight">Mistral</span> exploite ce site web à titre informatif et communautaire. Nous nous engageons à protéger la vie privée des visiteurs. Cette politique explique quelles données sont collectées, comment elles sont utilisées et quels sont vos droits.</p>
+        <p>Ce site est un site statique hébergé sur <span class="highlight">GitHub Pages</span>. Il ne dispose pas de base de données propre ni de système de compte utilisateur.</p>
+    </div>
+
+    <div class="glass">
+        <h2><span>📊</span> Données collectées</h2>
+        <p>Ce site ne collecte <span class="highlight">aucune donnée personnelle directement</span>. Cependant, les services tiers intégrés peuvent collecter certaines informations :</p>
+        <ul>
+            <li><strong>GitHub Pages</strong> (hébergeur) — peut enregistrer des logs de connexion (adresse IP, navigateur, pages visitées) conformément à sa <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener" class="link-inline">politique de confidentialité</a>.</li>
+            <li><strong>Google Fonts</strong> — charge des polices depuis les serveurs Google, ce qui peut transmettre votre adresse IP à Google.</li>
+            <li><strong>Steam API</strong> — utilisée sur la page News pour afficher les actualités War Thunder. Aucune donnée vous concernant n'est transmise à Steam.</li>
+            <li><strong>Google Forms</strong> (page Recrutement) — si vous soumettez le formulaire de candidature, vos réponses sont stockées par Google conformément à sa <a href="https://policies.google.com/privacy?hl=fr" target="_blank" rel="noopener" class="link-inline">politique de confidentialité</a>.</li>
+        </ul>
+    </div>
+
+    <div class="glass">
+        <h2><span>🎯</span> Utilisation des données</h2>
+        <p>Les informations fournies via le formulaire de recrutement (pseudo, BR, disponibilités…) sont utilisées <span class="highlight">uniquement</span> pour :</p>
+        <ul>
+            <li>Traiter votre candidature à l'escadron Mistral</li>
+            <li>Vous contacter via Discord ou email en lien avec votre candidature</li>
+        </ul>
+        <p>Elles ne sont ni vendues, ni partagées avec des tiers, ni utilisées à des fins commerciales.</p>
+    </div>
+
+    <div class="glass">
+        <h2><span>🔗</span> Liens externes</h2>
+        <p>Ce site contient des liens vers des services tiers (Discord, Steam, Google Sheets…). Mistral n'est pas responsable des pratiques de confidentialité de ces services. Nous vous encourageons à consulter leurs politiques respectives.</p>
+    </div>
+
+    <div class="glass">
+        <h2><span>🇪🇺</span> Vos droits (RGPD)</h2>
+        <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez des droits suivants :</p>
+        <ul>
+            <li><strong>Droit d'accès</strong> — savoir quelles données vous concernant sont détenues</li>
+            <li><strong>Droit de rectification</strong> — corriger des données inexactes</li>
+            <li><strong>Droit à l'effacement</strong> — demander la suppression de vos données</li>
+            <li><strong>Droit d'opposition</strong> — vous opposer au traitement de vos données</li>
+        </ul>
+        <p>Pour exercer ces droits, contactez-nous à l'adresse : <a href="mailto:mistralwt.contact@gmail.com" class="link-inline">mistralwt.contact@gmail.com</a></p>
+    </div>
+
+    <div class="glass">
+        <h2><span>✏️</span> Modifications</h2>
+        <p>Cette politique peut être mise à jour à tout moment. La date de dernière modification est indiquée en haut de cette page. En continuant à utiliser le site après une modification, vous acceptez la version mise à jour.</p>
+    </div>
+
+</div>
+
+<footer>
+    <div class="foot-l">
+        <img src="images/logo-mistralv2.png" alt="">
+        Mistral
+    </div>
+    <div class="foot-c">© 2026 Mistral — Tous droits réservés</div>
+</footer>
+
+<script>
+    const cvs = document.getElementById('cvs');
+    const ctx = cvs.getContext('2d');
+    function resize(){ cvs.width=innerWidth; cvs.height=innerHeight; }
+    addEventListener('resize', resize); resize();
+    const pts = Array.from({length:80},()=>({
+        x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+        r:Math.random()*1.2+.3, vx:(Math.random()-.5)*.2, vy:(Math.random()-.5)*.2,
+        a:Math.random()*.3+.05, c:Math.random()>.5?'#ff0044':'#8800ff'
+    }));
+    function draw(){
+        ctx.clearRect(0,0,cvs.width,cvs.height);
+        pts.forEach(p=>{
+            p.x+=p.vx; p.y+=p.vy;
+            if(p.x<0||p.x>cvs.width||p.y<0||p.y>cvs.height){p.x=Math.random()*cvs.width;p.y=Math.random()*cvs.height;}
+            ctx.save(); ctx.globalAlpha=p.a; ctx.fillStyle=p.c; ctx.shadowColor=p.c; ctx.shadowBlur=6;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+
+    const hbg = document.getElementById('hbg');
+    const navMobile = document.getElementById('nav-mobile');
+    hbg.addEventListener('click', () => {
+        hbg.classList.toggle('open');
+        navMobile.classList.toggle('open');
+        document.body.style.overflow = navMobile.classList.contains('open') ? 'hidden' : '';
+    });
+    navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        hbg.classList.remove('open');
+        navMobile.classList.remove('open');
+        document.body.style.overflow = '';
+    }));
+</script>
+</body>
+</html>
